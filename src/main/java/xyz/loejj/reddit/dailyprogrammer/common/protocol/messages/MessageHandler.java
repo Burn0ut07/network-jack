@@ -25,4 +25,5 @@ public interface MessageHandler {
     void handle(Pass message, BlackjackPlayer player);
     void handle(Play message, BlackjackPlayer player);
     void handle(GameOver message);
+    void handle(Info message);
 }

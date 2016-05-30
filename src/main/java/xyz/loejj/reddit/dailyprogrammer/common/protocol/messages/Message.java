@@ -10,7 +10,9 @@ import xyz.loejj.reddit.dailyprogrammer.server.BlackjackPlayer;
  */
 public interface Message {
     void accept(MessageHandler handler, BlackjackPlayer player);
-
+    default String getInfoDescription(BlackjackPlayer player) {
+        return toString();
+    }
     default String toWireFormat() {
         return toString() + "\n";
     }

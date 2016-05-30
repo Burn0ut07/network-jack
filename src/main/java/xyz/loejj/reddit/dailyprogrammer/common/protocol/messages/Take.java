@@ -23,6 +23,11 @@ public class Take implements Message {
         return REPR;
     }
 
+    @Override
+    public String getInfoDescription(BlackjackPlayer player) {
+        return player.getName() + " has taken a card.";
+    }
+
     public static Stream<Message> parse(String message) {
         if (message.equals(REPR)) {
             return Stream.of(new Take());

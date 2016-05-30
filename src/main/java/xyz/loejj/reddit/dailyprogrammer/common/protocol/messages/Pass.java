@@ -23,6 +23,11 @@ public class Pass implements Message {
         return REPR;
     }
 
+    @Override
+    public String getInfoDescription(BlackjackPlayer player) {
+        return player.getName() + " has passed.";
+    }
+
     public static Stream<Message> parse(String message) {
         if (message.equals(REPR)) {
             return Stream.of(new Pass());

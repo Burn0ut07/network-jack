@@ -28,6 +28,7 @@ public class MessageParser {
         parserFunctions.add(Pass::parse);
         parserFunctions.add(Play::parse);
         parserFunctions.add(GameOver::parse);
+        parserFunctions.add(Info::parse);
     }
 
     public Message parse(String message) {

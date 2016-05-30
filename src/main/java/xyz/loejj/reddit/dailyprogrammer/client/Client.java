@@ -184,6 +184,11 @@ public class Client extends AbstractVerticle implements MessageHandler {
         handleRoundStart();
     }
 
+    @Override
+    public void handle(Info message) {
+        System.out.println(message.getInfo());
+    }
+
     public void handleRoundStart() {
         vertx.executeBlocking(future -> {
             String choice = "0";

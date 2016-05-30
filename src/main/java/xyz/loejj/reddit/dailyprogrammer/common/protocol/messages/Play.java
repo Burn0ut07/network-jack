@@ -40,6 +40,11 @@ public class Play implements Message {
         return "PLAY " + card;
     }
 
+    @Override
+    public String getInfoDescription(BlackjackPlayer player) {
+        return player.getName() + " has played " + card;
+    }
+
     public static Stream<Message> parse(String message) {
         Matcher matcher = PLAY_PATTERN.matcher(message);
         if (!matcher.matches()) {

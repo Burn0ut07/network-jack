@@ -54,7 +54,11 @@ public class BlackjackGame {
                 .findAny();
     }
 
-    public boolean isGameReady() {
+    public boolean isNewGameReady() {
+        if (inGame) {
+            return false;
+        }
+
         inGame = players.stream().allMatch(player -> player.isReady());
         return inGame;
     }
@@ -95,14 +99,15 @@ public class BlackjackGame {
     }
 
     public void resetGame() {
+        players.addAll(waitingPlayers);
+        waitingPlayers.clear();
         for (BlackjackPlayer player : players) {
             player.setReady(false);
             player.setPass(false);
             player.resetHand();
         }
+        currentPlayer = 0;
         inGame = false;
-        players.addAll(waitingPlayers);
-        waitingPlayers.clear();
     }
 
     public BlackjackCard getRandomCard() {

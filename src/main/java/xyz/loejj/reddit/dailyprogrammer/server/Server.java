@@ -75,7 +75,7 @@ public class Server extends AbstractVerticle implements MessageHandler {
     @Override
     public void handle(Start message, BlackjackPlayer player) {
         player.setReady(true);
-        if (blackjackGame.isGameReady()) {
+        if (blackjackGame.isNewGameReady()) {
             handleGameStart();
         }
     }
@@ -90,12 +90,14 @@ public class Server extends AbstractVerticle implements MessageHandler {
         BlackjackCard card = blackjackGame.getRandomCard();
         player.addCardToHand(card);
         player.getNetSocket().write(new Play(card).toWireFormat());
+        broadcastInfo(player, message);
     }
 
     @Override
     public void handle(Pass message, BlackjackPlayer player) {
         player.setPass(true);
-        resetIfGameOver();
+        broadcastInfo(player, message);
+        handleNextPlayer();
     }
 
     @Override
@@ -105,12 +107,17 @@ public class Server extends AbstractVerticle implements MessageHandler {
                 .filter(card -> card.equals(messageCard))
                 .findAny()
                 .ifPresent(card -> card.setHidden(false));
-
+        broadcastInfo(player, message);
         handleNextPlayer();
     }
 
     @Override
     public void handle(GameOver message) {
+
+    }
+
+    @Override
+    public void handle(Info message) {
 
     }
 
@@ -140,6 +147,7 @@ public class Server extends AbstractVerticle implements MessageHandler {
             List<String> winners = results.getWinners().parallelStream()
                     .map(BlackjackPlayer::getName)
                     .collect(Collectors.toList());
+            blackjackGame.resetGame();
             sendToAll(blackjackGame.getAllConnected(), new GameOver(winners, results.getWinningScore()));
         }
     }
@@ -147,6 +155,16 @@ public class Server extends AbstractVerticle implements MessageHandler {
     private void sendToAll(List<BlackjackPlayer> receivers, Message message) {
         for (BlackjackPlayer receiver : receivers) {
             receiver.getNetSocket().write(message.toWireFormat());
+        }
+    }
+
+    private void broadcastInfo(BlackjackPlayer doNotSendTo, Message message) {
+        Info toBroadcast = new Info(message.getInfoDescription(doNotSendTo));
+
+        for (BlackjackPlayer receiver : blackjackGame.getAllConnected()) {
+            if (!receiver.equals(doNotSendTo)) {
+                receiver.getNetSocket().write(toBroadcast.toWireFormat());
+            }
         }
     }
 }
